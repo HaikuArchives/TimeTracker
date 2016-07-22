@@ -1,0 +1,17 @@
+TimeTracker
+-------------------
+
+TimeTracker is a new program which I wrote because somebody mailed a
+request on BeUserTalk, that he would like a program to keep track of the time
+he spent on various projects. So I thought: What the heck, I will just code the app for him.
+And here it is.
+
+The interface should be self explanatory, if you have any problems with please email
+me at: Naish@worldonline.dk
+
+The icon is from Robin Leach's Icon collection, available from BeBits.
+
+Warning: Ocassionaly the app crashes when you quit, I will fix this when I have time, if you can't wait, then the sourcecode is available and you can fix it for yourself.
+
+Have fun
+Michael Wulff Nielsen
