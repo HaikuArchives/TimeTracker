@@ -31,7 +31,7 @@ NewTaskView::NewTaskView(BRect Frame)
 	Temp.left = Temp.right - 50;
 	Temp.bottom = Temp.top + 20;
 	
-	m_Ok = new BButton(Temp, "Ok", "Ok", new BMessage(BUTTON_NEW_TASK_OK),
+	m_Ok = new BButton(Temp, "OK", "OK", new BMessage(BUTTON_NEW_TASK_OK),
 		B_FOLLOW_RIGHT | B_FOLLOW_TOP);
 	AddChild(m_Ok);
 
@@ -58,14 +58,14 @@ NewTaskView::MessageReceived(BMessage* message)
 		BMessage* Temp = new BMessage(BUTTON_NEW_TASK_OK);
 		Temp->AddString("Title", m_TextControl->Text());
 		Window()->PostMessage(Temp);
+		break;
 	}
-	break;
 	case BUTTON_NEW_TASK_CANCEL:
 	{
 		BMessage* Temp = new BMessage(BUTTON_NEW_TASK_CANCEL);
 		Window()->PostMessage(Temp);
+		break;
 	}
-	break;
 	default:
 		BView::MessageReceived(message);
 		break;
@@ -85,6 +85,6 @@ void
 NewTaskView::Draw(BRect	updateRect)
 {
 	BPoint P(5, 18);
-	DrawString("Enter taskname:", P);
+	DrawString("Enter task name:", P);
 	
 }

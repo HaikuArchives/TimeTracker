@@ -20,25 +20,23 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	temp.bottom = temp.top + 19;
 	BMenuBar* bar = new BMenuBar(temp, "root menu");
 
-	BMenu* MyMenu = new BMenu("File");
-	
-	MyMenu->AddItem(new BMenuItem("New Task", new BMessage(MENU_FILE_NEW_TASK),
-		'N',B_COMMAND_KEY));
-	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("About", new BMessage(MENU_FILE_ABOUT), 'A',
-		B_COMMAND_KEY));
+	BMenu* MyMenu = new BMenu("App");
+
+	MyMenu->AddItem(new BMenuItem("About", new BMessage(MENU_FILE_ABOUT)));
 	MyMenu->AddSeparatorItem();
 	MyMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_FILE_QUIT), 'Q',
 		B_COMMAND_KEY));
 	bar->AddItem(MyMenu);
 
 	MyMenu = new BMenu("Task");
-	MyMenu->AddItem(new BMenuItem("Start/Stop Task",
+	MyMenu->AddItem(new BMenuItem("Start/Stop task",
 		new BMessage(MENU_TASK_START_STOP), 'S', B_COMMAND_KEY));
 	MyMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
 		0, 0));
 	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("Delete Task",
+	MyMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_FILE_NEW_TASK),
+		'N',B_COMMAND_KEY));
+	MyMenu->AddItem(new BMenuItem("Delete task",
 		new BMessage(MENU_TASK_DELETE), 0, 0));
 	bar->AddItem(MyMenu);
 	
@@ -64,7 +62,7 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	
 	LoadTasks();
 	
-	m_Thread = spawn_thread(Function,"Ticker", B_NORMAL_PRIORITY,
+	m_Thread = spawn_thread(Function, "Ticker", B_NORMAL_PRIORITY,
 		(void*)m_ListView);
 	resume_thread(m_Thread);
 }
@@ -78,34 +76,35 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	case MENU_FILE_ABOUT:
 	{
 		BAlert*	T = new BAlert("Information",
-		"Time Tracker V1.0\n"
-		"By Michael Wulff Nielsen\n"
+		"TimeTracker V0.1\n"
+		"by Michael Wulff Nielsen\n\n"
 		"This program is released under the Gnu Public License\n"
 		"For information about this application write to Naish@worldonline.dk",
-		"okay");
+		"OK");
 		T->Go();
+		break;
 	}
-	break;
 	case MENU_FILE_NEW_TASK:
 	{
 		suspend_thread(m_Thread);	//Time doesn't go when I add a new task
 		RemoveChild(m_ScrollView);
 		AddChild(m_TaskView);
 		m_TaskView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
+		break;
 	}
-	break;
 	case MENU_FILE_QUIT:
+	{
 		be_app->PostMessage(B_QUIT_REQUESTED);
-	break;
-
+		break;
+	}
 	case BUTTON_NEW_TASK_CANCEL:
 	{
 		RemoveChild(m_TaskView);
 		AddChild(m_ScrollView);
 		m_ScrollView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
 		resume_thread(m_Thread);	//Okay back to work ;)
+		break;
 	}
-	break;
 	case BUTTON_NEW_TASK_OK:
 	{
 		BString	TaskName;
@@ -115,12 +114,13 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		m_ListView->AddItem(new TaskListItem(TaskName)); //Hey a new task. DOH!
 		m_ScrollView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
 		resume_thread(m_Thread);	//Okay back to work ;)
+		break;
 	}
-	break;
-	
 	case MENU_TASK_START_STOP:
+	{
 		ToggleTask();
-	break;
+		break;
+	}
 	case MENU_TASK_DELETE:
 	{
 		int32 selection = m_ListView->CurrentSelection();
@@ -128,20 +128,18 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 			BListItem* temp = m_ListView->RemoveItem(selection);
 			delete(temp);
 		}
+		break;
 	}
-	break;
 	case MENU_TASK_RESET:
 	{
 		int32 selection = m_ListView->CurrentSelection();
-		if (selection >= 0)
-		{
+		if (selection >= 0) {
 			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(selection);
 			temp->ResetTime();
 			m_ListView->Invalidate();
 		}
+		break;
 	}
-	break;
-	
 	default:
 		BWindow::MessageReceived(message);
 		break;
@@ -191,7 +189,7 @@ TimeTrackerWindow::LoadTasks()
 {
 	BPath	MyPath;
 	
-	if (find_directory(B_USER_SETTINGS_DIRECTORY,&MyPath,false) == B_OK) {
+	if (find_directory(B_USER_SETTINGS_DIRECTORY, &MyPath, false) == B_OK) {
 		BString	filename(MyPath.Path());
 		filename.Append("/TimeTrackerTasks");
 
