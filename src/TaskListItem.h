@@ -3,6 +3,7 @@
 
 #include <ListItem.h>
 #include <SupportKit.h>
+#include <View.h>
 
 class	TaskListItem : public BListItem
 {

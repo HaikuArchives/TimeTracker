@@ -1,4 +1,5 @@
 #include "NewTaskView.h"
+#include <Window.h>
 
 NewTaskView::NewTaskView(BRect Frame) : BView(Frame,"NewTask",B_FOLLOW_ALL_SIDES,B_WILL_DRAW)
 {
