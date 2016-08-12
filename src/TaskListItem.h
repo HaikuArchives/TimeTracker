@@ -1,3 +1,9 @@
+/*
+ * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * All rights reserved. Distributed under the terms of the GPL license.
+ */
+
+
 #ifndef TASKLISTITEM_H
 #define TASKLISTITEM_H
 
@@ -10,18 +16,19 @@ class	TaskListItem : public BListItem
 public:
 	TaskListItem(BString Taskname);
 
-	void	ToggleTaskStatus();
-	void	SetStatus();
-	BString	GetTaskName();
-	void	SetTime(bigtime_t time);
+	void		ToggleTaskStatus();
+	void		SetStatus();
+	BString		GetTaskName();
+	void		SetTime(bigtime_t time);
 	bigtime_t	GetTime();
-	bool	GetStatus();
-	void	SetStatus(bool state);
+	bool		GetStatus();
+	void		SetStatus(bool state);
 	
-	void	TimeTick();
-	void	ResetTime();
-	void	DrawItem(BView *owner,BRect itemRect,bool drawEverything =false);
-	void	Update(BView *owner, const BFont *font);
+	void		TimeTick();
+	void		ResetTime();
+	void		DrawItem(BView* owner, BRect itemRect,
+					bool drawEverything = false);
+	void		Update(BView* owner, const BFont* font);
 protected:
 	BString		GetStringTime();
 private:

@@ -1,3 +1,9 @@
+/*
+ * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * All rights reserved. Distributed under the terms of the GPL license.
+ */
+
+
 #ifndef DEFINES_H
 #define DEFINES_H
 

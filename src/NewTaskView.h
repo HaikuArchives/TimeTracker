@@ -1,9 +1,15 @@
+/*
+ * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * All rights reserved. Distributed under the terms of the GPL license.
+ */
+
+
 #ifndef NEW_TASK_VIEW
 #define NEW_TASK_VIEW
 
-#include <View.h>
-#include <TextControl.h>
 #include <Button.h>
+#include <TextControl.h>
+#include <View.h>
 
 #include "Defines.h"
 
@@ -12,7 +18,7 @@ class NewTaskView : public BView
 public:
 	NewTaskView(BRect Frame);
 
-	void	Draw(BRect	updateRect);	
+	void	Draw(BRect updateRect);	
 	void	AttachedToWindow();
 
 	void	MessageReceived(BMessage* message);
