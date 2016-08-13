@@ -1,30 +1,32 @@
 /*
  * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
  * All rights reserved. Distributed under the terms of the GPL license.
+ * Contributers:
+ *		Humdinger, humdingerb@gmail.com
  */
 
+
+#include <LayoutBuilder.h>
 
 #include "TimeTrackerWindow.h"
 
 extern	int32 Function(void* Data);
 extern	BMessage ApplicationPreferences;
 
+
 TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	:
-	BWindow(Frame, "TimeTracker V0.1", B_TITLED_WINDOW, B_FRAME_EVENTS)
+	BWindow(Frame, "TimeTracker", B_TITLED_WINDOW, B_FRAME_EVENTS |
+		B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	m_TasksSaved = false;
 
-	BRect temp;
-	temp = Bounds();
-	temp.bottom = temp.top + 19;
-	BMenuBar* bar = new BMenuBar(temp, "root menu");
-
+	BMenuBar* bar = new BMenuBar("root menu");
 	BMenu* MyMenu = new BMenu("App");
 
-	MyMenu->AddItem(new BMenuItem("About", new BMessage(MENU_FILE_ABOUT)));
+	MyMenu->AddItem(new BMenuItem("About", new BMessage(MENU_APP_ABOUT)));
 	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_FILE_QUIT), 'Q',
+	MyMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_APP_QUIT), 'Q',
 		B_COMMAND_KEY));
 	bar->AddItem(MyMenu);
 
@@ -34,34 +36,37 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	MyMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
 		0, 0));
 	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_FILE_NEW_TASK),
+	MyMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
 		'N',B_COMMAND_KEY));
 	MyMenu->AddItem(new BMenuItem("Delete task",
 		new BMessage(MENU_TASK_DELETE), 0, 0));
 	bar->AddItem(MyMenu);
-	
-	
-	BRect temp1 = Bounds();
-	temp1.InsetBy(2, 2);
-	temp1.top += 20;
-	temp1.right -= B_V_SCROLL_BAR_WIDTH;
-	
-	m_ListView = new BListView(temp1, "Tasks", B_SINGLE_SELECTION_LIST,
-		B_FOLLOW_ALL_SIDES);
+
+	m_ListView = new BListView("Tasks", B_SINGLE_SELECTION_LIST, B_WILL_DRAW);
 	m_ListView->SetInvocationMessage(new BMessage(MENU_TASK_START_STOP));
-	temp1 = Bounds();
-	temp1.top += 20;
 
-	m_TaskView = new NewTaskView(temp1);
- 
 	m_ScrollView = new BScrollView("ScrollTask", m_ListView,
-		B_FOLLOW_ALL_SIDES, B_FULL_UPDATE_ON_RESIZE, false, true);
-	AddChild(m_ScrollView);
+		B_WILL_DRAW, false, true);
 
-	AddChild(bar);
-	
+	m_TaskView = new NewTaskView();
+	m_TaskView->SetExplicitMaxSize(BSize(B_SIZE_UNLIMITED, B_SIZE_UNLIMITED));
+
+	m_CardLayout = new BCardLayout();
+	new BView("card", B_SUPPORTS_LAYOUT, m_CardLayout);
+
+	m_CardLayout->AddView(m_ScrollView);	// item 0
+	m_CardLayout->AddView(m_TaskView);		// item 1
+	m_CardLayout->SetVisibleItem((int32)0);
+
+	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+		.Add(bar)
+		.AddGroup(B_VERTICAL)
+			.SetInsets(B_USE_WINDOW_SPACING)
+			.Add(m_CardLayout)
+			.End();
+
 	LoadTasks();
-	
+
 	m_Thread = spawn_thread(Function, "Ticker", B_NORMAL_PRIORITY,
 		(void*)m_ListView);
 	resume_thread(m_Thread);
@@ -73,35 +78,35 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what)
 	{
-	case MENU_FILE_ABOUT:
+	case MENU_APP_ABOUT:
 	{
 		BAlert*	T = new BAlert("Information",
-		"TimeTracker V0.1\n"
-		"by Michael Wulff Nielsen\n\n"
-		"This program is released under the Gnu Public License\n"
-		"For information about this application write to Naish@worldonline.dk",
+		"TimeTracker V0.2\n"
+		"\tby Michael Wulff Nielsen\n"
+		"\tand Humdinger\n\n"
+		"This program is released under the Gnu Public License\n",
 		"OK");
 		T->Go();
 		break;
 	}
-	case MENU_FILE_NEW_TASK:
+	case MENU_APP_NEW_TASK:
 	{
+		m_Frame = Bounds();
 		suspend_thread(m_Thread);	//Time doesn't go when I add a new task
-		RemoveChild(m_ScrollView);
-		AddChild(m_TaskView);
-		m_TaskView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
+		m_CardLayout->SetVisibleItem((int32)1);
+		InvalidateLayout();
 		break;
 	}
-	case MENU_FILE_QUIT:
+	case MENU_APP_QUIT:
 	{
 		be_app->PostMessage(B_QUIT_REQUESTED);
 		break;
 	}
 	case BUTTON_NEW_TASK_CANCEL:
 	{
-		RemoveChild(m_TaskView);
-		AddChild(m_ScrollView);
-		m_ScrollView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
+		m_CardLayout->SetVisibleItem((int32)0);
+		InvalidateLayout();
+		ResizeTo(m_Frame.Width(), m_Frame.Height());
 		resume_thread(m_Thread);	//Okay back to work ;)
 		break;
 	}
@@ -109,10 +114,10 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	{
 		BString	TaskName;
 		TaskName.SetTo(message->FindString("Title"));	
-		RemoveChild(m_TaskView);
-		AddChild(m_ScrollView);
+		m_CardLayout->SetVisibleItem((int32)0);
 		m_ListView->AddItem(new TaskListItem(TaskName)); //Hey a new task. DOH!
-		m_ScrollView->ResizeTo(Bounds().Width(), (Bounds().Height()) - 20);
+		InvalidateLayout();
+		ResizeTo(m_Frame.Width(), m_Frame.Height());
 		resume_thread(m_Thread);	//Okay back to work ;)
 		break;
 	}
@@ -188,7 +193,7 @@ void
 TimeTrackerWindow::LoadTasks()
 {
 	BPath	MyPath;
-	
+
 	if (find_directory(B_USER_SETTINGS_DIRECTORY, &MyPath, false) == B_OK) {
 		BString	filename(MyPath.Path());
 		filename.Append("/TimeTrackerTasks");
@@ -232,15 +237,15 @@ void
 TimeTrackerWindow::SaveTasks()
 {
 	BPath MyPath;
-	
+
 	if (find_directory(B_USER_SETTINGS_DIRECTORY,&MyPath,false) == B_OK) {
 		BString	filename(MyPath.Path());
 		filename.Append("/TimeTrackerTasks");
 		BFile prefsfile(filename.String(), B_WRITE_ONLY | B_CREATE_FILE |
 			B_ERASE_FILE);	
-		
+
 		BMessage Tasks;
-		
+
 		for (int i = 0; i < m_ListView->CountItems(); i++)
 		{
 			char Buffer[255];

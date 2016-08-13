@@ -1,8 +1,11 @@
 /*
  * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
  * All rights reserved. Distributed under the terms of the GPL license.
+ * Contributers:
+ *		Humdinger, humdingerb@gmail.com
  */
 
+#include <InterfaceDefs.h>
 
 #include "TaskListItem.h"
 
@@ -49,39 +52,35 @@ void
 TaskListItem::DrawItem(BView* owner, BRect itemRect,
 	bool drawEverything = false)
 {
-	rgb_color selected = {255, 255, 255};
+	rgb_color selected = ui_color(B_LIST_BACKGROUND_COLOR);
 
 	if (IsSelected()) {
-		selected.red = 240;
-		selected.green = 240;
-		selected.blue = 240;
+		selected = ui_color(B_LIST_SELECTED_BACKGROUND_COLOR);
 		owner->SetHighColor(selected);
 		owner->FillRect(itemRect);
-	} else if(drawEverything) {
-		selected.red = 255;
-		selected.green = 255;
-		selected.blue = 255;
+	} else if (drawEverything) {
+		selected = ui_color(B_LIST_BACKGROUND_COLOR);
 		owner->SetHighColor(selected);
 		owner->FillRect(itemRect);
 	}
-	
-	rgb_color Text = {255, 0, 0};
 
-	if (m_ActiveTask) {
-		Text.red = 0;
-		Text.green = 0;
-		Text.blue = 0;
-	}
-	
+	rgb_color Text = ui_color(B_LIST_ITEM_TEXT_COLOR);
+
+    if (IsSelected())
+		Text = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+
+	if (m_ActiveTask)
+		Text = ui_color(B_SUCCESS_COLOR);
+
 	owner->SetLowColor(selected);
 	owner->SetHighColor(Text);
 
 	owner->MovePenTo(itemRect.left + 4, itemRect.bottom - 2);
-	
+
 	BString	temp = m_TaskName;
 	temp.Append(" - ");
 	temp.Append(GetStringTime());
-	
+
 	owner->DrawString(temp.String());
 }
 
@@ -130,7 +129,7 @@ TaskListItem::GetStringTime()
 	Day = (m_SpentTime / 60 / 60 / 24);
 
 	sprintf(buffer, "%d days, %d:%d:%d", Day, Hours, Minutes, Seconds);
-	
+
 	BString temp;
 	temp.SetTo(buffer);
 	return(temp);

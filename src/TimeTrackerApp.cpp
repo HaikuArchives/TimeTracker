@@ -16,7 +16,7 @@ TimeTrackerApp::TimeTrackerApp()
 	LoadPrefs();
 	BRect Temp;
 	Temp = ApplicationPreferences.FindRect("Window");
-	
+
 	m_Window = new TimeTrackerWindow(Temp);
 	m_Window->Show();
 }
@@ -35,7 +35,7 @@ void
 TimeTrackerApp::LoadPrefs()
 {
 	BPath MyPath;
-	
+
 	if (find_directory(B_USER_SETTINGS_DIRECTORY,&MyPath,false) == B_OK) {
 		BString	filename(MyPath.Path());
 		filename.Append("/TimeTracker");

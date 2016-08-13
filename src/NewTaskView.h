@@ -16,11 +16,9 @@
 class NewTaskView : public BView
 {
 public:
-	NewTaskView(BRect Frame);
+			NewTaskView();
 
-	void	Draw(BRect updateRect);	
 	void	AttachedToWindow();
-
 	void	MessageReceived(BMessage* message);
 private:
 	BTextControl*	m_TextControl;	

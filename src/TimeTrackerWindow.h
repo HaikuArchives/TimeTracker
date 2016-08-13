@@ -9,6 +9,7 @@
 
 #include <Application.h>
 #include <Alert.h>
+#include <CardLayout.h>
 #include <ListView.h>
 #include <Menu.h>
 #include <MenuBar.h>
@@ -23,6 +24,7 @@
 #include "Defines.h"
 #include "NewTaskView.h"
 #include "TaskListItem.h"
+
 
 class TimeTrackerWindow : public BWindow
 {
@@ -44,6 +46,9 @@ private:
 	NewTaskView*	m_TaskView;
 	BScrollView*	m_ScrollView;
 
+	BCardLayout*	m_CardLayout;
+
+	BRect			m_Frame;
 	thread_id		m_Thread;
 
 	bool			m_TasksSaved;
