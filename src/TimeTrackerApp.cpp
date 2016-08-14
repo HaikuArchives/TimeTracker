@@ -1,9 +1,11 @@
 /*
- * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 2016, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
  */
 
 
+#include <Alert.h>
 #include "TimeTrackerApp.h"
 
 BMessage ApplicationPreferences;
@@ -28,6 +30,29 @@ TimeTrackerApp::QuitRequested()
 	m_Window->SaveTasks();
 	SavePrefs();
 	return(true);
+}
+
+
+void
+TimeTrackerApp::AboutRequested()
+{
+	BAlert *alert = new BAlert("about",
+		"TimeTracker v0.2\n"
+		"\toriginally by Michael Wulff Nielsen,\n"
+		"\tCopyright 200?\n\n"
+		"\tadapted and improved for Haiku\n"
+		"\tby Humdinger, Copyright 2016\n\n"
+		"Keep track of the time you spend on your various projects.",
+		"Thank you");
+
+	BTextView *view = alert->TextView();
+	BFont font;
+	view->SetStylable(true);
+	view->GetFont(&font);
+	font.SetSize(font.Size() + 4);
+	font.SetFace(B_BOLD_FACE);
+	view->SetFontAndColor(0, 11, &font);
+	alert->Go();
 }
 
 

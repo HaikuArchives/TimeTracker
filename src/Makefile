@@ -37,11 +37,11 @@ SRCS = \
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
-RDEFS = 
+RDEFS = TimeTracker.rdef
 
 #	Specify the resource files to use. Full or relative paths can be used.
 #	Both RDEFS and RSRCS can be utilized in the same Makefile.
-RSRCS = TimeTracker.rsrc
+RSRCS = 
 
 # End Pe/Eddie support.
 # @<-src@ 
@@ -106,7 +106,7 @@ SYMBOLS :=
 
 #	Includes debug information, which allows the binary to be debugged easily.
 #	If set to "TRUE", debug info will be created.
-DEBUGGER := TRUE
+DEBUGGER := 
 
 #	Specify any additional compiler flags to be used.
 COMPILER_FLAGS = 

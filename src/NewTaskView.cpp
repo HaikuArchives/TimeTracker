@@ -1,8 +1,7 @@
 /*
- * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 2016, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
- * Contributers:
- *		Humdinger, humdingerb@gmail.com
  */
 
 

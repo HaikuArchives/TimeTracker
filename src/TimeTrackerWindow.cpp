@@ -1,13 +1,13 @@
 /*
- * Copyright Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
+ * Copyright 2016, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
- * Contributers:
- *		Humdinger, humdingerb@gmail.com
  */
 
 
 #include <LayoutBuilder.h>
 
+//#include "TimeTrackerApp.h"
 #include "TimeTrackerWindow.h"
 
 extern	int32 Function(void* Data);
@@ -24,7 +24,9 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	BMenuBar* bar = new BMenuBar("root menu");
 	BMenu* MyMenu = new BMenu("App");
 
-	MyMenu->AddItem(new BMenuItem("About", new BMessage(MENU_APP_ABOUT)));
+	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
+	item->SetTarget(be_app);
+	MyMenu->AddItem(item);
 	MyMenu->AddSeparatorItem();
 	MyMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_APP_QUIT), 'Q',
 		B_COMMAND_KEY));
@@ -78,17 +80,6 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 {
 	switch(message->what)
 	{
-	case MENU_APP_ABOUT:
-	{
-		BAlert*	T = new BAlert("Information",
-		"TimeTracker V0.2\n"
-		"\tby Michael Wulff Nielsen\n"
-		"\tand Humdinger\n\n"
-		"This program is released under the Gnu Public License\n",
-		"OK");
-		T->Go();
-		break;
-	}
 	case MENU_APP_NEW_TASK:
 	{
 		m_Frame = Bounds();
