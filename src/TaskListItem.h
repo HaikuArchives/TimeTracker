@@ -35,9 +35,6 @@ private:
 	BString				m_TaskName;
 	bigtime_t			m_SpentTime;
 	bool				m_ActiveTask;
-
-	BView*				m_View;
-	const BFont*		m_Font;
 };
 
 #endif

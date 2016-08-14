@@ -11,8 +11,6 @@
 
 TaskListItem::TaskListItem(BString Taskname)
 {
-	m_View = NULL;
-	m_Font = NULL;
 	m_TaskName = Taskname;
 	m_ActiveTask = false;
 	m_SpentTime = 0;
@@ -52,36 +50,46 @@ void
 TaskListItem::DrawItem(BView* owner, BRect itemRect,
 	bool drawEverything = false)
 {
-	rgb_color selected = ui_color(B_LIST_BACKGROUND_COLOR);
+	// colors
+	rgb_color background = tint_color(ui_color(B_LIST_BACKGROUND_COLOR), 1.08);
+	rgb_color text = tint_color(ui_color(B_LIST_ITEM_TEXT_COLOR), 0.8);
 
-	if (IsSelected()) {
-		selected = ui_color(B_LIST_SELECTED_BACKGROUND_COLOR);
-		owner->SetHighColor(selected);
-		owner->FillRect(itemRect);
-	} else if (drawEverything) {
-		selected = ui_color(B_LIST_BACKGROUND_COLOR);
-		owner->SetHighColor(selected);
-		owner->FillRect(itemRect);
+	if (m_ActiveTask) {
+		text = ui_color(B_SUCCESS_COLOR);
+		background = ui_color(B_LIST_BACKGROUND_COLOR);
 	}
+	if (IsSelected()) {
+		background = ui_color(B_LIST_SELECTED_BACKGROUND_COLOR);
+		text = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+		if (m_ActiveTask)
+			text = ui_color(B_SUCCESS_COLOR);
+	} else if (drawEverything)
+		background = ui_color(B_LIST_BACKGROUND_COLOR);
 
-	rgb_color Text = ui_color(B_LIST_ITEM_TEXT_COLOR);
+	owner->SetHighColor(background);
+	owner->FillRect(itemRect);
 
-    if (IsSelected())
-		Text = ui_color(B_LIST_SELECTED_ITEM_TEXT_COLOR);
+	owner->SetLowColor(background);
+	owner->SetHighColor(text);
 
-	if (m_ActiveTask)
-		Text = ui_color(B_SUCCESS_COLOR);
-
-	owner->SetLowColor(selected);
-	owner->SetHighColor(Text);
-
-	owner->MovePenTo(itemRect.left + 4, itemRect.bottom - 2);
+	// text
+	BFont font;
+	font.SetFace(B_REGULAR_FACE);
+	owner->SetFont(&font);
+	font_height	fheight;
+	font.GetHeight(&fheight);
 
 	BString	temp = m_TaskName;
 	temp.Append(" - ");
 	temp.Append(GetStringTime());
 
-	owner->DrawString(temp.String());
+	owner->DrawString(temp.String(), BPoint(4,
+		itemRect.top + fheight.ascent + fheight.descent + fheight.leading));
+
+	// draw lines
+	owner->SetHighColor(tint_color(ui_color(B_CONTROL_BACKGROUND_COLOR),
+		B_DARKEN_2_TINT));
+	owner->StrokeLine(itemRect.LeftBottom(), itemRect.RightBottom());
 }
 
 
@@ -139,7 +147,11 @@ TaskListItem::GetStringTime()
 void
 TaskListItem::Update(BView* owner, const BFont* font)
 {
-	m_View = owner;
-	m_Font = font;
 	BListItem::Update(owner, font);
+
+	font_height	fheight;
+	font->GetHeight(&fheight);
+
+	SetHeight(ceilf(fheight.ascent + 2 + fheight.leading / 2
+		+ fheight.descent) + 5);
 }
