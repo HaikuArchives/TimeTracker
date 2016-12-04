@@ -1,17 +1,18 @@
 TimeTracker
 -------------------
 
-TimeTracker is a new program which I wrote because somebody mailed a
-request on BeUserTalk, that he would like a program to keep track of the time
-he spent on various projects. So I thought: What the heck, I will just code the app for him.
-And here it is.
+Easier, faster time tracking for Haiku.
+Timetracker greatly improves the way you can work in Haiku by keeping a track of time on your various tasks . 
 
-The interface should be self explanatory, if you have any problems with please email
-me at: Naish@worldonline.dk
+Create task .
+1. Open TimeTracker.
+2. Click Task
+3. In the drop down menu select new task .
+4. Enter the name of the task .
 
-The icon is from Robin Leach's Icon collection, available from BeBits.
+Start/stop task :
+1.Create a task.
+2.Select the task .
+3.Under Task click Start/Stop task .
 
-Warning: Ocassionaly the app crashes when you quit, I will fix this when I have time, if you can't wait, then the sourcecode is available and you can fix it for yourself.
-
-Have fun
-Michael Wulff Nielsen
+Originally created by Michael Wulff Nielsen modified by Humdinger .
