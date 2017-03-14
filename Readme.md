@@ -16,6 +16,6 @@ Timetracker greatly improves the way you can work in Haiku by keeping a track of
 2. Select the task .
 3. Under Task click Start/Stop task .
 
-![Screenshot](Screenshot 3.png "TimeTracker")
+![Screenshot](Screenshot%203.png "TimeTracker")
 
 Originally created by Michael Wulff Nielsen modified by Humdinger .
