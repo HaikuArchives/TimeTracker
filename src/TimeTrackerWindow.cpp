@@ -21,30 +21,30 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 {
 	m_TasksSaved = false;
 
-	BMenuBar* bar = new BMenuBar("root menu");
-	BMenu* MyMenu = new BMenu("App");
+	m_bar = new BMenuBar("root menu");
+	m_AppMenu = new BMenu("App");
 
 	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
-	MyMenu->AddItem(item);
-	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_APP_QUIT), 'Q',
+	m_AppMenu->AddItem(item);
+	m_AppMenu->AddSeparatorItem();
+	m_AppMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_APP_QUIT), 'Q',
 		B_COMMAND_KEY));
-	bar->AddItem(MyMenu);
+	m_bar->AddItem(m_AppMenu);
 
-	MyMenu = new BMenu("Task");
-	MyMenu->AddItem(new BMenuItem("Start/Stop task",
+	m_TaskMenu = new BMenu("Task");
+	m_TaskMenu->AddItem(new BMenuItem("Start/Stop task",
 		new BMessage(MENU_TASK_START_STOP), 'S', B_COMMAND_KEY));
-	MyMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
+	m_TaskMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
 		0, 0));
-	MyMenu->AddSeparatorItem();
-	MyMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
+	m_TaskMenu->AddSeparatorItem();
+	m_TaskMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
 		'N',B_COMMAND_KEY));
-	MyMenu->AddItem(new BMenuItem("Delete task",
-		new BMessage(MENU_TASK_DELETE), 0, 0));
-	bar->AddItem(MyMenu);
+	m_TaskMenu->AddItem(new BMenuItem("Delete task",
+		new BMessage(MENU_TASK_DELETE), 'D', B_COMMAND_KEY));
+	m_bar->AddItem(m_TaskMenu);
 
-	m_ListView = new BListView("Tasks", B_SINGLE_SELECTION_LIST, B_WILL_DRAW);
+	m_ListView = new BListView("Tasks", B_MULTIPLE_SELECTION_LIST, B_WILL_DRAW);
 	m_ListView->SetInvocationMessage(new BMessage(MENU_TASK_START_STOP));
 
 	m_ScrollView = new BScrollView("ScrollTask", m_ListView,
@@ -61,7 +61,7 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	m_CardLayout->SetVisibleItem((int32)0);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(bar)
+		.Add(m_bar)
 		.AddGroup(B_VERTICAL)
 			.SetInsets(B_USE_WINDOW_SPACING)
 			.Add(m_CardLayout)
@@ -81,7 +81,8 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	switch(message->what)
 	{
 	case MENU_APP_NEW_TASK:
-	{
+	{	
+		m_TaskMenu->SetEnabled(false);
 		m_Frame = Bounds();
 		suspend_thread(m_Thread);	//Time doesn't go when I add a new task
 		m_CardLayout->SetVisibleItem((int32)1);
@@ -99,6 +100,7 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		InvalidateLayout();
 		ResizeTo(m_Frame.Width(), m_Frame.Height());
 		resume_thread(m_Thread);	//Okay back to work ;)
+		m_TaskMenu->SetEnabled(true);
 		break;
 	}
 	case BUTTON_NEW_TASK_OK:
@@ -110,6 +112,7 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		InvalidateLayout();
 		ResizeTo(m_Frame.Width(), m_Frame.Height());
 		resume_thread(m_Thread);	//Okay back to work ;)
+		m_TaskMenu->SetEnabled(true);
 		break;
 	}
 	case MENU_TASK_START_STOP:
@@ -119,10 +122,23 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	}
 	case MENU_TASK_DELETE:
 	{
+		
 		int32 selection = m_ListView->CurrentSelection();
 		if (selection >= 0) {
-			BListItem* temp = m_ListView->RemoveItem(selection);
-			delete(temp);
+			BAlert* alert  = new BAlert("Confirm delete", 
+						"Are you sure you want to delete the selected task(s)?", 
+					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+		
+			alert->SetShortcut(1, B_ESCAPE);
+			int32 button_inndex = alert->Go();
+		
+			if (button_inndex == 0) {
+				int32 s = 0;
+				do {	
+					if (m_ListView->IsItemSelected(s))
+						delete	m_ListView->RemoveItem(s);
+				}	while((s = m_ListView->CurrentSelection())>=0);
+			}
 		}
 		break;
 	}
@@ -130,8 +146,14 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	{
 		int32 selection = m_ListView->CurrentSelection();
 		if (selection >= 0) {
-			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(selection);
-			temp->ResetTime();
+			int32 s = 0;
+			do {	
+				if (m_ListView->IsItemSelected(s)) {
+					TaskListItem*	temp = (TaskListItem*)m_ListView->ItemAt(s);
+					temp->ResetTime();
+					m_ListView->Deselect(s);
+				}			
+			}	while((s = m_ListView->CurrentSelection())>=0);
 			m_ListView->Invalidate();
 		}
 		break;
@@ -148,8 +170,14 @@ TimeTrackerWindow::ToggleTask()
 {
 	int32 selection = m_ListView->CurrentSelection();
 	if (selection >= 0) {
-		TaskListItem*	temp = (TaskListItem*)m_ListView->ItemAt(selection);
-		temp->ToggleTaskStatus();
+		int32 s = 0;
+		do {	
+			if (m_ListView->IsItemSelected(s)) {
+				TaskListItem*	temp = (TaskListItem*)m_ListView->ItemAt(s);
+				temp->ToggleTaskStatus();
+				m_ListView->Deselect(s);
+			}			
+		}	while((s = m_ListView->CurrentSelection())>=0);
 		m_ListView->Invalidate();
 	}
 }
