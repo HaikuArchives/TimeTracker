@@ -46,7 +46,9 @@ private:
 	BListView*		m_ListView;
 	NewTaskView*	m_TaskView;
 	BScrollView*	m_ScrollView;
-
+	BMenuBar*		m_bar;
+	BMenu*			m_AppMenu;
+	BMenu*			m_TaskMenu;
 	BCardLayout*	m_CardLayout;
 
 	BRect			m_Frame;
