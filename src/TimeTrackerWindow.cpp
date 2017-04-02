@@ -108,7 +108,7 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		BString	TaskName;
 		TaskName.SetTo(message->FindString("Title"));
 
-		int32 button_inndex;
+		int32 button_index;
 		for (int i = 0; i < m_ListView->CountItems(); i++) {
 			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(i);
 			BString t_name = temp->GetTaskName().String();
@@ -119,12 +119,12 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 					"Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 				alert->SetShortcut(1, B_ESCAPE);
-				button_inndex = alert->Go();
+				button_index = alert->Go();
 				break;
 			}
 		}
 
-		if (button_inndex==0) {
+		if (button_index == 0) {
 			m_CardLayout->SetVisibleItem((int32)0);
 			m_ListView->AddItem(new TaskListItem(TaskName)); //Hey a new task. DOH!
 			InvalidateLayout();
@@ -149,9 +149,9 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		
 			alert->SetShortcut(1, B_ESCAPE);
-			int32 button_inndex = alert->Go();
+			int32 button_index = alert->Go();
 		
-			if (button_inndex == 0) {
+			if (button_index == 0) {
 				int32 s = 0;
 				do {	
 					if (m_ListView->IsItemSelected(s))
