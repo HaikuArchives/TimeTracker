@@ -108,7 +108,7 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		BString	TaskName;
 		TaskName.SetTo(message->FindString("Title"));
 
-		int32 button_index;
+		int32 button_index = 0;
 		for (int i = 0; i < m_ListView->CountItems(); i++) {
 			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(i);
 			BString t_name = temp->GetTaskName().String();
