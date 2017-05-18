@@ -127,9 +127,8 @@ TaskListItem::GetStringTime()
 
 	BString timeText;
 
-	BDurationFormat formatter;
-	formatter.Format(timeText, 0, m_SpentTime * 1000000,
-				B_TIME_UNIT_ABBREVIATED);
+	BDurationFormat formatter(":", B_TIME_UNIT_ABBREVIATED);
+	formatter.Format(timeText, 0, m_SpentTime * 1000000);
 	return timeText;
 }
 
