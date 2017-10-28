@@ -24,7 +24,7 @@ NewTaskView::NewTaskView()
 	m_Cancel = new BButton("Cancel", "Cancel",
 		new BMessage(BUTTON_NEW_TASK_CANCEL));
 
-	static const float spacing = be_control_look->DefaultItemSpacing();
+	static float spacing = be_control_look->DefaultItemSpacing();
 	BLayoutBuilder::Group<>(this, B_VERTICAL)
 		.SetInsets(spacing, spacing, spacing, spacing)
 		.Add(m_TextControl)
