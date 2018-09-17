@@ -47,7 +47,7 @@ TaskListItem::GetTime()
 
 void
 TaskListItem::DrawItem(BView* owner, BRect itemRect,
-	bool drawEverything = false)
+	bool drawEverything)
 {
 	// colors
 	rgb_color background = tint_color(ui_color(B_LIST_BACKGROUND_COLOR), 1.08);
