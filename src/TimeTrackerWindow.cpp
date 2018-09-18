@@ -228,7 +228,7 @@ TimeTrackerWindow::LoadTasks()
 				char Buffer[255];
 				sprintf(Buffer, "Task%d", pos);
 				const char*	TaskName;
-				TaskName = Tasks.FindString(Buffer, 0);
+				TaskName = Tasks.FindString(Buffer);
 				if (TaskName != NULL) {
 					sprintf(Buffer, "TaskTime%d", pos);
 					bigtime_t* time;
