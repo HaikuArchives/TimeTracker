@@ -135,7 +135,8 @@ TaskListItem::GetStringTime()
 	Hours = (m_SpentTime / 60 / 60) % 24;
 	Day = (m_SpentTime / 60 / 60 / 24);
 
-	sprintf(buffer, "%d days, %d:%d:%d", Day, Hours, Minutes, Seconds);
+	if (Day < 1) sprintf(buffer, "%d:%d:%d", Hours, Minutes, Seconds);
+	else sprintf(buffer, "%d days, %d:%d:%d", Day, Hours, Minutes, Seconds);
 
 	BString temp;
 	temp.SetTo(buffer);
