@@ -5,7 +5,7 @@
  */
 
 #include <InterfaceDefs.h>
-
+#include <DurationFormat.h>
 #include "TaskListItem.h"
 
 TaskListItem::TaskListItem(BString Taskname)
@@ -79,7 +79,7 @@ TaskListItem::DrawItem(BView* owner, BRect itemRect,
 	font.GetHeight(&fheight);
 
 	BString	temp = m_TaskName;
-	temp.Append(" - ");
+	temp.Append("  |  ");
 	temp.Append(GetStringTime());
 
 	owner->DrawString(temp.String(), BPoint(4,
@@ -123,24 +123,11 @@ TaskListItem::GetStatus()
 BString
 TaskListItem::GetStringTime()
 {
-	char buffer[255];
-
-	int	Day = 0;
-	int Hours = 0;
-	int Minutes = 0;
-	int Seconds = 0;
-	
-	Seconds = m_SpentTime % 60;
-	Minutes = (m_SpentTime / 60) % 60;
-	Hours = (m_SpentTime / 60 / 60) % 24;
-	Day = (m_SpentTime / 60 / 60 / 24);
-
-	if (Day < 1) sprintf(buffer, "%d:%d:%d", Hours, Minutes, Seconds);
-	else sprintf(buffer, "%d days, %d:%d:%d", Day, Hours, Minutes, Seconds);
-
-	BString temp;
-	temp.SetTo(buffer);
-	return(temp);
+	BString timeText;
+ 	BDurationFormat formatter;
+	formatter.Format(timeText, m_SpentTime * 1000000,
+				B_TIME_UNIT_ABBREVIATED);
+	return timeText;
 }
 
 
