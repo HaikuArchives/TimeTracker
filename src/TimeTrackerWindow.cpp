@@ -149,7 +149,7 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	{
 		int32 selection = m_ListView->CurrentSelection();
 		if (selection >= 0) {
-			TaskListItem*	temp = (TaskListItem*)m_ListView->ItemAt(selection);
+			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(selection);
 			TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(" copy"));
 			duplicate->SetStatus(temp->GetStatus());
 			duplicate->SetTime(temp->GetTime());
