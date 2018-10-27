@@ -149,12 +149,16 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	{
 		int32 selection = m_ListView->CurrentSelection();
 		if (selection >= 0) {
-			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(selection);
-			TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(" copy"));
-			duplicate->SetStatus(temp->GetStatus());
-			duplicate->SetTime(temp->GetTime());
-			m_ListView->AddItem(duplicate); //Duplicate task!
-			m_ListView->Deselect(selection);
+			int32 s = 0;
+			do {
+				TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(s);
+				TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(" copy"));
+				duplicate->SetStatus(temp->GetStatus());
+				duplicate->SetTime(temp->GetTime());
+				m_ListView->AddItem(duplicate); //Duplicate task!
+				m_ListView->Deselect(s);
+				m_ListView->Invalidate();
+			} while((s = m_ListView->CurrentSelection())>=0);
 			m_ListView->Invalidate();
 		}
 		break;
