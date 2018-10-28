@@ -48,7 +48,7 @@ TaskListItem::GetTime()
 
 void
 TaskListItem::DrawItem(BView* owner, BRect itemRect,
-	bool drawEverything = false)
+	bool drawEverything)
 {
 	// colors
 	rgb_color background = tint_color(ui_color(B_LIST_BACKGROUND_COLOR), 1.08);
@@ -80,7 +80,7 @@ TaskListItem::DrawItem(BView* owner, BRect itemRect,
 	font.GetHeight(&fheight);
 
 	BString	temp = m_TaskName;
-	temp.Append(" - ");
+	temp.Append("  -  ");
 	temp.Append(GetStringTime());
 
 	owner->DrawString(temp.String(), BPoint(4,
@@ -124,10 +124,8 @@ TaskListItem::GetStatus()
 BString
 TaskListItem::GetStringTime()
 {
-
 	BString timeText;
-
-	BDurationFormat formatter(":", B_TIME_UNIT_ABBREVIATED);
+ 	BDurationFormat formatter(", ", B_TIME_UNIT_ABBREVIATED);
 	formatter.Format(timeText, 0, m_SpentTime * 1000000);
 	return timeText;
 }

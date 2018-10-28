@@ -40,8 +40,11 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	m_TaskMenu->AddSeparatorItem();
 	m_TaskMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
 		'N',B_COMMAND_KEY));
+	// Duplicate the selected event
+	m_TaskMenu->AddItem(new BMenuItem("Duplicate task", new BMessage(MENU_APP_DUPLICATE_TASK),
+		'D',B_COMMAND_KEY));
 	m_TaskMenu->AddItem(new BMenuItem("Delete task",
-		new BMessage(MENU_TASK_DELETE), 'D', B_COMMAND_KEY));
+		new BMessage(MENU_TASK_DELETE), 'X', B_COMMAND_KEY));
 	m_bar->AddItem(m_TaskMenu);
 
 	m_ListView = new BListView("Tasks", B_MULTIPLE_SELECTION_LIST, B_WILL_DRAW);
@@ -161,6 +164,24 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 		}
 		break;
 	}
+	case MENU_APP_DUPLICATE_TASK:
+	{
+		int32 selection = m_ListView->CurrentSelection();
+		if (selection >= 0) {
+			int32 s = selection;
+			do {
+				TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(s);
+				TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(" copy"));
+				duplicate->SetStatus(temp->GetStatus());
+				duplicate->SetTime(temp->GetTime());
+				m_ListView->AddItem(duplicate); //Duplicate task!
+				m_ListView->Deselect(s);
+				m_ListView->Invalidate();
+			} while((s = m_ListView->CurrentSelection())>=selection);
+			m_ListView->Invalidate();
+		}
+		break;
+	}
 	case MENU_TASK_RESET:
 	{
 		int32 selection = m_ListView->CurrentSelection();
@@ -247,7 +268,7 @@ TimeTrackerWindow::LoadTasks()
 				char Buffer[255];
 				sprintf(Buffer, "Task%d", pos);
 				const char*	TaskName;
-				TaskName = Tasks.FindString(Buffer, 0L);
+				TaskName = Tasks.FindString(Buffer);
 				if (TaskName != NULL) {
 					sprintf(Buffer, "TaskTime%d", pos);
 					bigtime_t* time;
