@@ -109,14 +109,33 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	case BUTTON_NEW_TASK_OK:
 	{
 		BString	TaskName;
-		TaskName.SetTo(message->FindString("Title"));	
-		m_CardLayout->SetVisibleItem((int32)0);
-		m_ListView->AddItem(new TaskListItem(TaskName)); //Hey a new task. DOH!
-		InvalidateLayout();
-		ResizeTo(m_Frame.Width(), m_Frame.Height());
-		resume_thread(m_Thread);	//Okay back to work ;)
-		m_TaskMenu->SetEnabled(true);
-		break;
+		TaskName.SetTo(message->FindString("Title"));
+
+		int32 button_index = 0;
+		for (int i = 0; i < m_ListView->CountItems(); i++) {
+			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(i);
+			BString t_name = temp->GetTaskName().String();
+			if (TaskName == t_name) {
+				BAlert* alert  = new BAlert("Confirm Add",
+					"A task with exactly similar name already exists.\
+						Do you want to continue?", NULL, "OK",
+					"Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
+				alert->SetShortcut(1, B_ESCAPE);
+				button_index = alert->Go();
+				break;
+			}
+		}
+
+		if (button_index == 0) {
+			m_CardLayout->SetVisibleItem((int32)0);
+			m_ListView->AddItem(new TaskListItem(TaskName)); //Hey a new task. DOH!
+			InvalidateLayout();
+			ResizeTo(m_Frame.Width(), m_Frame.Height());
+			resume_thread(m_Thread);	//Okay back to work ;)
+			m_TaskMenu->SetEnabled(true);
+			break;
+		}
 	}
 	case MENU_TASK_START_STOP:
 	{
@@ -133,9 +152,9 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 		
 			alert->SetShortcut(1, B_ESCAPE);
-			int32 button_inndex = alert->Go();
+			int32 button_index = alert->Go();
 		
-			if (button_inndex == 0) {
+			if (button_index == 0) {
 				int32 s = 0;
 				do {	
 					if (m_ListView->IsItemSelected(s))

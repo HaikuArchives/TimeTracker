@@ -6,6 +6,7 @@
 
 #include <InterfaceDefs.h>
 #include <DurationFormat.h>
+
 #include "TaskListItem.h"
 
 TaskListItem::TaskListItem(BString Taskname)
