@@ -45,11 +45,13 @@ NewTaskView::MessageReceived(BMessage* message)
 	case BUTTON_NEW_TASK_OK:
 	{
 		BMessage* Temp;
-		if (m_TextControl->Text() == "")
+		int32 length = m_TextControl->TextLength();
+		if (length == 0)
 			Temp = new BMessage(BUTTON_NEW_TASK_CANCEL);
 		else {
 			Temp = new BMessage(BUTTON_NEW_TASK_OK);
 			Temp->AddString("Title", m_TextControl->Text());
+			m_TextControl->SetText("");
 		}
 		Window()->PostMessage(Temp);
 		break;
