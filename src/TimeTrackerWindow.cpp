@@ -36,7 +36,7 @@ TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	m_TaskMenu->AddItem(new BMenuItem("Start/Stop task",
 		new BMessage(MENU_TASK_START_STOP), 'S', B_COMMAND_KEY));
 	m_TaskMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
-		0, 0));
+		'R', B_COMMAND_KEY));
 	m_TaskMenu->AddSeparatorItem();
 	m_TaskMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
 		'N',B_COMMAND_KEY));
