@@ -1,16 +1,18 @@
 /*
  * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
- * Copyright 2016, Humdinger <humdingerb@gmail.com>
+ * Copyright 2016-2020, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
  */
 
 
+#include <Catalog.h>
 #include <ControlLook.h>
 #include <LayoutBuilder.h>
 #include <Window.h>
 
 #include "NewTaskView.h"
-
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "NewTaskView"
 
 NewTaskView::NewTaskView()
 	:
@@ -18,10 +20,10 @@ NewTaskView::NewTaskView()
 {
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 
-	m_TextControl = new BTextControl("TaskName", "Enter task name:", "",
-		NULL);
-	m_Ok = new BButton("OK", "OK", new BMessage(BUTTON_NEW_TASK_OK));
-	m_Cancel = new BButton("Cancel", "Cancel",
+	m_TextControl = new BTextControl("TaskName",
+		B_TRANSLATE("Enter task name:"), "", NULL);
+	m_Ok = new BButton("OK", B_TRANSLATE("OK"), new BMessage(BUTTON_NEW_TASK_OK));
+	m_Cancel = new BButton("Cancel", B_TRANSLATE("Cancel"),
 		new BMessage(BUTTON_NEW_TASK_CANCEL));
 
 	static float spacing = be_control_look->DefaultItemSpacing();

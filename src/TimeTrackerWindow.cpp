@@ -1,14 +1,18 @@
 /*
  * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
- * Copyright 2016, Humdinger <humdingerb@gmail.com>
+ * Copyright 2016-2020, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
  */
 
 
+#include <Catalog.h>
 #include <LayoutBuilder.h>
+#include <StringFormat.h>
 
-//#include "TimeTrackerApp.h"
 #include "TimeTrackerWindow.h"
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "TieTrackerWindow"
 
 extern	int32 Function(void* Data);
 extern	BMessage ApplicationPreferences;
@@ -16,34 +20,35 @@ extern	BMessage ApplicationPreferences;
 
 TimeTrackerWindow::TimeTrackerWindow(BRect Frame)
 	:
-	BWindow(Frame, "TimeTracker", B_TITLED_WINDOW, B_FRAME_EVENTS |
-		B_AUTO_UPDATE_SIZE_LIMITS)
+	BWindow(Frame, B_TRANSLATE_SYSTEM_NAME("TimeTracker"), B_TITLED_WINDOW,
+		B_FRAME_EVENTS | B_AUTO_UPDATE_SIZE_LIMITS)
 {
 	m_TasksSaved = false;
 
 	m_bar = new BMenuBar("root menu");
-	m_AppMenu = new BMenu("App");
+	m_AppMenu = new BMenu(B_TRANSLATE("App"));
 
-	BMenuItem* item = new BMenuItem("About", new BMessage(B_ABOUT_REQUESTED));
+	BMenuItem* item = new BMenuItem(B_TRANSLATE("About"),
+		new BMessage(B_ABOUT_REQUESTED));
 	item->SetTarget(be_app);
 	m_AppMenu->AddItem(item);
 	m_AppMenu->AddSeparatorItem();
-	m_AppMenu->AddItem(new BMenuItem("Quit", new BMessage(MENU_APP_QUIT), 'Q',
-		B_COMMAND_KEY));
+	m_AppMenu->AddItem(new BMenuItem(B_TRANSLATE("Quit"),
+		new BMessage(MENU_APP_QUIT), 'Q', B_COMMAND_KEY));
 	m_bar->AddItem(m_AppMenu);
 
-	m_TaskMenu = new BMenu("Task");
-	m_TaskMenu->AddItem(new BMenuItem("Start/Stop task",
+	m_TaskMenu = new BMenu(B_TRANSLATE("Task"));
+	m_TaskMenu->AddItem(new BMenuItem(B_TRANSLATE("Start/Stop task"),
 		new BMessage(MENU_TASK_START_STOP), 'S', B_COMMAND_KEY));
-	m_TaskMenu->AddItem(new BMenuItem("Reset time", new BMessage(MENU_TASK_RESET),
-		'R', B_COMMAND_KEY));
+	m_TaskMenu->AddItem(new BMenuItem(B_TRANSLATE("Reset time"),
+		new BMessage(MENU_TASK_RESET), 'R', B_COMMAND_KEY));
 	m_TaskMenu->AddSeparatorItem();
-	m_TaskMenu->AddItem(new BMenuItem("New task", new BMessage(MENU_APP_NEW_TASK),
-		'N',B_COMMAND_KEY));
+	m_TaskMenu->AddItem(new BMenuItem(B_TRANSLATE("New task"),
+		new BMessage(MENU_APP_NEW_TASK), 'N',B_COMMAND_KEY));
 	// Duplicate the selected event
-	m_TaskMenu->AddItem(new BMenuItem("Duplicate task", new BMessage(MENU_APP_DUPLICATE_TASK),
-		'D',B_COMMAND_KEY));
-	m_TaskMenu->AddItem(new BMenuItem("Delete task",
+	m_TaskMenu->AddItem(new BMenuItem(B_TRANSLATE("Duplicate task"),
+		new BMessage(MENU_APP_DUPLICATE_TASK), 'D',B_COMMAND_KEY));
+	m_TaskMenu->AddItem(new BMenuItem(B_TRANSLATE("Delete task"),
 		new BMessage(MENU_TASK_DELETE), 'X', B_COMMAND_KEY));
 	m_bar->AddItem(m_TaskMenu);
 
@@ -116,10 +121,11 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 			TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(i);
 			BString t_name = temp->GetTaskName().String();
 			if (TaskName == t_name) {
-				BAlert* alert  = new BAlert("Confirm Add",
-					"A task with exactly similar name already exists.\
-						Do you want to continue?", NULL, "OK",
-					"Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+				BAlert* alert  = new BAlert(B_TRANSLATE("Confirm new task"),
+					B_TRANSLATE("A task with that name already exists.\
+						Do you want to create a similarly named task anyway?"),
+						NULL, B_TRANSLATE("Create new task"),
+					B_TRANSLATE("Cancel"), B_WIDTH_AS_USUAL, B_WARNING_ALERT);
 
 				alert->SetShortcut(1, B_ESCAPE);
 				button_index = alert->Go();
@@ -144,19 +150,28 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 	}
 	case MENU_TASK_DELETE:
 	{
-		
-		int32 selection = m_ListView->CurrentSelection();
+		int32 count = 0;
+		int32 selection;
+		while (selection = m_ListView->CurrentSelection(count) >= 0)
+		   count++;
+
 		if (selection >= 0) {
-			BAlert* alert  = new BAlert("Confirm delete", 
-						"Are you sure you want to delete the selected task(s)?", 
-					NULL, "OK", "Cancel", B_WIDTH_AS_USUAL, B_WARNING_ALERT);
-		
+			BString text = "";
+			static BStringFormat format(B_TRANSLATE("{0, plural,"
+				"one{Are you sure you want to delete the selected task?}"
+				"other{Are you sure you want to delete the # selected tasks?}}"));
+			format.Format(text, count);
+
+			BAlert* alert  = new BAlert(B_TRANSLATE("Confirm deletion"), text,
+				NULL, B_TRANSLATE("Delete"), B_TRANSLATE("Cancel"),
+				B_WIDTH_AS_USUAL, B_WARNING_ALERT);
+
 			alert->SetShortcut(1, B_ESCAPE);
 			int32 button_index = alert->Go();
-		
+
 			if (button_index == 0) {
 				int32 s = 0;
-				do {	
+				do {
 					if (m_ListView->IsItemSelected(s))
 						delete	m_ListView->RemoveItem(s);
 				}	while((s = m_ListView->CurrentSelection())>=0);
@@ -171,7 +186,9 @@ TimeTrackerWindow::MessageReceived(BMessage* message)
 			int32 s = selection;
 			do {
 				TaskListItem* temp = (TaskListItem*)m_ListView->ItemAt(s);
-				TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(" copy"));
+				BString copyTag = " ";
+				copyTag << B_TRANSLATE_COMMENT("copy", "Suffix for a duplicated task");
+				TaskListItem* duplicate = new TaskListItem(temp->GetTaskName().Append(copyTag));
 				duplicate->SetStatus(temp->GetStatus());
 				duplicate->SetTime(temp->GetTime());
 				m_ListView->AddItem(duplicate); //Duplicate task!

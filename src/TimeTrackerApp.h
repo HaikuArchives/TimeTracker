@@ -13,6 +13,8 @@
 
 #include "TimeTrackerWindow.h"	
 
+#define AppSignature	"application/x-vnd.MWN-TimeTracker"
+
 class TimeTrackerApp : public BApplication
 {
 public:

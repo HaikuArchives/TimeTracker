@@ -1,0 +1,24 @@
+1	English	application/x-vnd.MWN-TimeTracker	2226269569
+{0, plural,one{Are you sure you want to delete the selected task?}other{Are you sure you want to delete the # selected tasks?}}	TieTrackerWindow		{0, plural,one{Are you sure you want to delete the selected task?}other{Are you sure you want to delete the # selected tasks?}}
+Keep track of the time you spend on your various projects.	TimeTrackerApp		Keep track of the time you spend on your various projects.
+Confirm deletion	TieTrackerWindow		Confirm deletion
+Reset time	TieTrackerWindow		Reset time
+Task	TieTrackerWindow		Task
+copy	TieTrackerWindow	Suffix for a duplicated task	copy
+TimeTracker	System name		TimeTracker
+Quit	TieTrackerWindow		Quit
+Confirm new task	TieTrackerWindow		Confirm new task
+App	TieTrackerWindow		App
+Delete task	TieTrackerWindow		Delete task
+A task with that name already exists.\t\t\t\t\t\tDo you want to create a similarly named task anyway?	TieTrackerWindow		A task with that name already exists.\t\t\t\t\t\tDo you want to create a similarly named task anyway?
+New task	TieTrackerWindow		New task
+Enter task name:	NewTaskView		Enter task name:
+Cancel	NewTaskView		Cancel
+OK	NewTaskView		OK
+Create new task	TieTrackerWindow		Create new task
+Cancel	TieTrackerWindow		Cancel
+Duplicate task	TieTrackerWindow		Duplicate task
+Delete	TieTrackerWindow		Delete
+About	TieTrackerWindow		About
+Michael Wulff Nielsen (original author)	TimeTrackerApp		Michael Wulff Nielsen (original author)
+Start/Stop task	TieTrackerWindow		Start/Stop task

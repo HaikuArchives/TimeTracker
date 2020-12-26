@@ -1,19 +1,25 @@
 /*
  * Copyright 200?, Michael Wulff Nielsen <Naish@worldonline.dk>
- * Copyright 2016, Humdinger <humdingerb@gmail.com>
+ * Copyright 2016-2020, Humdinger <humdingerb@gmail.com>
  * All rights reserved. Distributed under the terms of the GPL license.
  */
 
 
+#include <AboutWindow.h>
 #include <Alert.h>
+#include <Catalog.h>
+
 #include "TimeTrackerApp.h"
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "TimeTrackerApp"
 
 BMessage ApplicationPreferences;
 
 
 TimeTrackerApp::TimeTrackerApp()
 	:
-	BApplication("application/x-vnd.MWN-TimeTracker")
+	BApplication(AppSignature)
 {
 	LoadPrefs();
 	BRect Temp;
@@ -36,23 +42,24 @@ TimeTrackerApp::QuitRequested()
 void
 TimeTrackerApp::AboutRequested()
 {
-	BAlert *alert = new BAlert("about",
-		"TimeTracker v0.2\n"
-		"\toriginally by Michael Wulff Nielsen,\n"
-		"\tCopyright 200?\n\n"
-		"\tadapted and improved for Haiku\n"
-		"\tby Humdinger, Copyright 2016\n\n"
-		"Keep track of the time you spend on your various projects.",
-		"Thank you");
-
-	BTextView *view = alert->TextView();
-	BFont font;
-	view->SetStylable(true);
-	view->GetFont(&font);
-	font.SetSize(font.Size() + 4);
-	font.SetFace(B_BOLD_FACE);
-	view->SetFontAndColor(0, 11, &font);
-	alert->Go();
+	BAboutWindow* aboutWin = new BAboutWindow(B_TRANSLATE_SYSTEM_NAME(
+		"TimeTracker"), AppSignature);
+	aboutWin->AddDescription(B_TRANSLATE(
+		"Keep track of the time you spend on your various projects."));
+	const char* extraCopyrights[] = {
+		"200? Michael Wulff Nielsen",
+		"2016-2020 Humdinger",
+		NULL
+	};
+	const char* authors[] = {
+		B_TRANSLATE("Michael Wulff Nielsen (original author)"),
+		"Begasus",
+		"Humdinger",
+		NULL
+	};
+	aboutWin->AddCopyright(2000, "Michael Wulff Nielsen", extraCopyrights);
+	aboutWin->AddAuthors(authors);
+	aboutWin->Show();
 }
 
 
